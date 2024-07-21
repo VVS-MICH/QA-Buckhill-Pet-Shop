@@ -61,3 +61,19 @@ Cypress.Commands.add("productBrand", () => {
     cy.wrap(productBrand).as("productBrand");
   });
 });
+
+Cypress.Commands.add("generateNewCustomer", () => {
+    cy.fixture("datafixtures").then((data) => {
+      const newCustomer = {
+        custFName: faker.name.firstName(),
+        custLName: faker.name.lastName(),
+        Email: faker.internet.email(),
+        custPhone: faker.phone.phoneNumber(),
+        custLocation: faker.address.city(),
+        custPassword: faker.internet.password(),
+      };
+  
+      cy.wrap(newCustomer).as("newCustomer");
+      // Wrapping the new customer data for usage in the tests
+    });
+  });

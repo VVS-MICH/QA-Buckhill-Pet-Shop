@@ -36,7 +36,19 @@ class AdminPage {
   hitButton(title) {
     cy.get('[class="v-btn__content"]').contains(title).click();
   }
+  enterCustomerField(title, selection) {
+    cy.get('[class="customer-card"]')
+      .find('[class="v-input__control"]')
+      .contains(title)
+      .next()
+      .type(selection, { force: true });
+  }
+
   
+
+  verifyNewCustomerData(property,columnIndex) {
+  cy.get('tbody').children().eq(-2).children().eq(columnIndex).should("have.text", property)
+}
 }
 
 export default AdminPage;
