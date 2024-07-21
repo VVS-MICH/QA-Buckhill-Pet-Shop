@@ -10,7 +10,7 @@ describe("get user details and log in", () => {
 
     cy.get("@VerifiedUserData").then((user) => {
     cy.fixture("datafixtures").then((data) => {
-      cy.loginUser(data.VerifiedUserData.email, data.password);
+      cy.loginUser(user.email, data.Custpassword);
     });
     customerPage.openProfile()
     const fullName = `${user.first_name} ${user.last_name}`;

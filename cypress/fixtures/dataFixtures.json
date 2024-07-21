@@ -1,4 +1,5 @@
 {
   "adminEmail": "admin@buckhill.co.uk",
-  "adminPassword": "admin"
+  "adminPassword": "admin",
+  "Custpassword": "userpassword"
 }

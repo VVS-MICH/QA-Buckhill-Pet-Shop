@@ -110,3 +110,14 @@ Cypress.Commands.add("generateNewCustomer", () => {
       });
     });
   });
+
+  Cypress.Commands.add("loginUser", (email, password) => {
+    cy.visit("/"); //visit home
+  
+    loginPage.btnLogin(); //click on log in
+    loginPage.enterLoginField("Email", email); 
+    loginPage.enterLoginField("Password", password);  //entering user credentials
+    loginPage.submitLogin();//clicking on the submit button
+    //verifying that the user is logged in by seeing the log out button
+    cy.get("button").contains("LOGOUT").should("exist").should("be.visible");
+  });
