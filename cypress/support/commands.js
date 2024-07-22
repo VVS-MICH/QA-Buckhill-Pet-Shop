@@ -121,3 +121,44 @@ Cypress.Commands.add("generateNewCustomer", () => {
     //verifying that the user is logged in by seeing the log out button
     cy.get("button").contains("LOGOUT").should("exist").should("be.visible");
   });
+
+
+Cypress.Commands.add('generateShippingDetails', () => {
+    const shippingDetails = {
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      addressLine1: faker.address.streetAddress(),
+      addressLine2: faker.address.secondaryAddress(),
+      city: faker.address.city(),
+      state: faker.address.state(),
+      zipCode: faker.address.zipCode(),
+      country: faker.address.country()
+    };
+    
+    return shippingDetails;
+  });
+
+  Cypress.Commands.add('generatePaymentDetails', () => {
+    const paymentDetails = {
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      addressLine1: faker.address.streetAddress(),
+      addressLine2: faker.address.secondaryAddress(),
+      city: faker.address.city(),
+      state: faker.address.state(),
+      zipCode: faker.address.zipCode(),
+      country: faker.address.country()
+    };
+    
+    return paymentDetails;
+  });
+
+  Cypress.Commands.add('generateCardDetails', () => {
+    const cardDetails = {
+      cardNumber: faker.finance.creditCardNumber(),
+      expiry: faker.date.future().toISOString().slice(0, 7).replace('-', '/'), // Format: MM/YY
+      cvv: faker.finance.creditCardCVV()
+    };
+  
+    return cardDetails;
+  });
