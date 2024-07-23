@@ -5,7 +5,7 @@ import CustomerPage from "../pageobjects/customerPage";
 const customerPage = new CustomerPage();
 
 describe("Purchase Items", () => {
-  it("Customer is able to add items from different categories to cart and purchase them", () => {
+  it("Customer is able to add items from categories in the home page to cart and purchase them", () => {
     cy.getUserLogin(); // getting verified customer to log in with
 
     cy.get("@VerifiedUserData").then((user) => {

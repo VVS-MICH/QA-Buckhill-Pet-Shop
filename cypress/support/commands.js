@@ -63,7 +63,7 @@ Cypress.Commands.add("productBrand", () => {
 });
 
 Cypress.Commands.add("generateNewCustomer", () => {
-    cy.fixture("datafixtures").then((data) => {
+ cy.fixture("datafixtures").then((data) => {
       const newCustomer = {
         custFName: faker.name.firstName(),
         custLName: faker.name.lastName(),
@@ -74,7 +74,7 @@ Cypress.Commands.add("generateNewCustomer", () => {
       };
   
       cy.wrap(newCustomer).as("newCustomer");
-      // Wrapping the new customer data for usage in the tests
+    //   Wrapping the new customer data for usage in the tests
     });
   });
 

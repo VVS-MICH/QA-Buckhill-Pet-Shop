@@ -11,9 +11,9 @@ describe("get user details and log in", () => {
     cy.get("@VerifiedUserData").then((user) => {
       const custPassword = Cypress.env("custPassword");
       
-      cy.loginUser(user.email, custPassword);
+      cy.loginUser(user.email, custPassword);  //log in as user
 
-      customerPage.openProfile();
+      customerPage.openProfile(); ///visiting the customer profile page
       
       const fullName = `${user.first_name} ${user.last_name}`;
       customerPage.verifyUserData("Name", fullName);
