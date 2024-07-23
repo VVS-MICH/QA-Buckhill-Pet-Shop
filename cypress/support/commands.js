@@ -78,35 +78,42 @@ Cypress.Commands.add("generateNewCustomer", () => {
     });
   });
 
+
   Cypress.Commands.add("getUserLogin", () => {
-    cy.fixture("datafixtures").then((data) => {
-      cy.request({
+    const adminEmail = Cypress.env("adminEmail");
+    const adminPassword = Cypress.env("adminPassword");
+  
+    cy.request({
         method: "POST",
-        url: "/api/v1/admin/login",
+        url: `${Cypress.config('baseUrl')}/api/v1/admin/login`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: {
-          email: data.adminEmail,
-          password: data.adminPassword,
-        }, //using api calls to log in as Admin
+            email: adminEmail ,
+          password: adminPassword
+        }
+        , //using api calls to log in as Admin
+    }).then((response) => {
+      const token = response.body.data.token;
+  
+      // Extracting the authentication token to be reused in fetching users
+      cy.request({
+        method: "GET",
+        url: `${Cypress.config('baseUrl')}/api/v1/admin/user-listing`,
+        headers: {
+          Authorization: `Bearer ${token}`, // Reusing the bearer token for authorization
+        },
       }).then((response) => {
-        const token = response.body.data.token;
-        // Extracting the authentication token to be reused in fetching users
-        cy.request({
-          method: "GET",
-          url: "/api/v1/admin/user-listing",
-          headers: {
-            Authorization: `Bearer ${token}`, // Reusing the bearer token for authorization
-          },
-        }).then((response) => {
-          const VerifiedUsers = response.body.data.filter(
-            (user) => user.email_verified_at !== null
-          ); // We want to get only users with verified emails, as unverified users produce a login error
-          if (VerifiedUsers.length > 0) {
-            const VerifiedUserData = VerifiedUsers[0];
-            cy.wrap(VerifiedUserData).as("VerifiedUserData"); // Wrapping the first verified user information to be reused
-          } else {
-            cy.log("No users with verified emails found");
-          }
-        });
+        const VerifiedUsers = response.body.data.filter(
+          (user) => user.email_verified_at !== null
+        ); // We want to get only users with verified emails, as unverified users produce a login error
+        if (VerifiedUsers.length > 0) {
+          const VerifiedUserData = VerifiedUsers[0];
+          cy.wrap(VerifiedUserData).as("VerifiedUserData"); // Wrapping the first verified user information to be reused
+        } else {
+          cy.log("No users with verified emails found");
+        }
       });
     });
   });
