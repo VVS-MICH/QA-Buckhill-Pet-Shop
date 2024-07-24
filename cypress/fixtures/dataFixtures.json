@@ -1,1 +1,7 @@
-{}
+{
+  "tokens": {
+    "adminToken": "",
+     "userToken": "" },
+  "VerifiedUserData": {
+  }
+}

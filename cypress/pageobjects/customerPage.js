@@ -10,7 +10,7 @@ class CustomerPage {
 
   openProfile() {
     cy.get('[class="v-toolbar__content"]')
-      .find('[class="v-img__img v-img__img--cover"]')
+      .find(".v-avatar")
       .click(); //click on the user profile image
   }
 

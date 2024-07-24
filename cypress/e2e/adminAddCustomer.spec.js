@@ -4,9 +4,9 @@ const adminPage = new AdminPage();
 
 describe("Admin Add Products", () => {
   it("Admin is able to add new product successfully", () => {
-    cy.generateNewCustomer();
+    cy.generateNewCustomer().then((newCustomer) => {
 
-    cy.get("@newCustomer").then((newCustomer) => {
+   
       const adminEmail = Cypress.env("adminEmail");
       const adminPassword = Cypress.env("adminPassword");
 

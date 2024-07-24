@@ -63,109 +63,135 @@ Cypress.Commands.add("productBrand", () => {
 });
 
 Cypress.Commands.add("generateNewCustomer", () => {
- cy.fixture("datafixtures").then((data) => {
-      const newCustomer = {
-        custFName: faker.name.firstName(),
-        custLName: faker.name.lastName(),
-        Email: faker.internet.email(),
-        custPhone: faker.phone.phoneNumber(),
-        custLocation: faker.address.city(),
-        custPassword: faker.internet.password(),
-      };
-  
-      cy.wrap(newCustomer).as("newCustomer");
-    //   Wrapping the new customer data for usage in the tests
-    });
+    const newCustomer = {
+      custFName: faker.name.firstName(),
+      custLName: faker.name.lastName(),
+      Email: faker.internet.email(),
+      custPhone: faker.phone.phoneNumber(),
+      custLocation: faker.address.city(),
+      custPassword: faker.internet.password(),
+    };
+    return newCustomer
   });
 
 
-  Cypress.Commands.add("getUserLogin", () => {
+// cypress/support/commands.js
+
+Cypress.Commands.add("getUserLogin", () => {
     const adminEmail = Cypress.env("adminEmail");
     const adminPassword = Cypress.env("adminPassword");
+    const custPassword = Cypress.env("custPassword");
   
     cy.request({
-        method: "POST",
-        url: `${Cypress.config('baseUrl')}/api/v1/admin/login`,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: {
-            email: adminEmail ,
-          password: adminPassword
-        }
-        , //using api calls to log in as Admin
+      method: "POST",
+      url: `${Cypress.config("baseUrl")}/api/v1/admin/login`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: {
+        email: adminEmail,
+        password: adminPassword,
+      },
     }).then((response) => {
-      const token = response.body.data.token;
+      const adminToken = response.body.data.token;
   
       // Extracting the authentication token to be reused in fetching users
       cy.request({
         method: "GET",
-        url: `${Cypress.config('baseUrl')}/api/v1/admin/user-listing`,
+        url: `${Cypress.config("baseUrl")}/api/v1/admin/user-listing`,
         headers: {
-          Authorization: `Bearer ${token}`, // Reusing the bearer token for authorization
+          Authorization: `Bearer ${adminToken}`, // Reusing the bearer token for authorization
         },
       }).then((response) => {
         const VerifiedUsers = response.body.data.filter(
           (user) => user.email_verified_at !== null
         ); // We want to get only users with verified emails, as unverified users produce a login error
+  
         if (VerifiedUsers.length > 0) {
-          const VerifiedUserData = VerifiedUsers[0];
-          cy.wrap(VerifiedUserData).as("VerifiedUserData"); // Wrapping the first verified user information to be reused
+          // Select a random verified user
+          const randomIndex = Math.floor(Math.random() * VerifiedUsers.length);
+          const VerifiedUserData = VerifiedUsers[randomIndex];
+          cy.wrap(VerifiedUserData).as("VerifiedUserData"); // Wrapping the random verified user information to be reused
+  
+          // Log in as the verified user to get the user token
+          cy.request({
+            method: "POST",
+            url: `${Cypress.config("baseUrl")}/api/v1/user/login`,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: {
+              email: VerifiedUserData.email,
+              password: custPassword,
+            },
+          }).then((response) => {
+            const userToken = response.body.data.token;
+  
+            // Save both tokens to the fixture file
+            const data = {
+              tokens: {
+                adminToken,
+                userToken,
+              },
+              VerifiedUserData
+            };
+            cy.writeFile("cypress/fixtures/dataFixtures.json", data);
+          });
         } else {
           cy.log("No users with verified emails found");
         }
       });
     });
   });
-
-  Cypress.Commands.add("loginUser", (email, password) => {
-    cy.visit("/"); //visit home
   
-    loginPage.btnLogin(); //click on log in
-    loginPage.enterLoginField("Email", email); 
-    loginPage.enterLoginField("Password", password);  //entering user credentials
-    loginPage.submitLogin();//clicking on the submit button
-    //verifying that the user is logged in by seeing the log out button
-    cy.get("button").contains("LOGOUT").should("exist").should("be.visible");
-  });
 
+Cypress.Commands.add("loginUser", (email, password) => {
+  cy.visit("/"); //visit home
 
-Cypress.Commands.add('generateShippingDetails', () => {
-    const shippingDetails = {
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      addressLine1: faker.address.streetAddress(),
-      addressLine2: faker.address.secondaryAddress(),
-      city: faker.address.city(),
-      state: faker.address.state(),
-      zipCode: faker.address.zipCode(),
-      country: faker.address.country()
-    };
-    
-    return shippingDetails;
-  });
+  loginPage.btnLogin(); //click on log in
+  loginPage.enterLoginField("Email", email);
+  loginPage.enterLoginField("Password", password); //entering user credentials
+  loginPage.submitLogin(); //clicking on the submit button
+  //verifying that the user is logged in by seeing the log out button
+  cy.get("button").contains("LOGOUT").should("exist").should("be.visible");
+});
 
-  Cypress.Commands.add('generatePaymentDetails', () => {
-    const paymentDetails = {
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      addressLine1: faker.address.streetAddress(),
-      addressLine2: faker.address.secondaryAddress(),
-      city: faker.address.city(),
-      state: faker.address.state(),
-      zipCode: faker.address.zipCode(),
-      country: faker.address.country()
-    };
-    
-    return paymentDetails;
-  });
+Cypress.Commands.add("generateShippingDetails", () => {
+  const shippingDetails = {
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    addressLine1: faker.address.streetAddress(),
+    addressLine2: faker.address.secondaryAddress(),
+    city: faker.address.city(),
+    state: faker.address.state(),
+    zipCode: faker.address.zipCode(),
+    country: faker.address.country(),
+  };
 
-  Cypress.Commands.add('generateCardDetails', () => {
-    const cardDetails = {
-      cardNumber: faker.finance.creditCardNumber(),
-      expiry: faker.date.future().toISOString().slice(0, 7).replace('-', '/'), // Format: MM/YY
-      cvv: faker.finance.creditCardCVV()
-    };
-  
-    return cardDetails;
-  });
+  return shippingDetails;
+});
+
+Cypress.Commands.add("generatePaymentDetails", () => {
+  const paymentDetails = {
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    addressLine1: faker.address.streetAddress(),
+    addressLine2: faker.address.secondaryAddress(),
+    city: faker.address.city(),
+    state: faker.address.state(),
+    zipCode: faker.address.zipCode(),
+    country: faker.address.country(),
+  };
+
+  return paymentDetails;
+});
+
+Cypress.Commands.add("generateCardDetails", () => {
+  const cardDetails = {
+    cardNumber: faker.finance.creditCardNumber(),
+    expiry: faker.date.future().toISOString().slice(0, 7).replace("-", "/"), // Format: MM/YY
+    cvv: faker.finance.creditCardCVV(),
+  };
+
+  return cardDetails;
+});
