@@ -123,3 +123,20 @@ In headed mode, the Cypress GUI will open, and you can see the tests running.
 
 #### Expected Results:
 - Customer details should be correctly displayed on the profile page.
+
+
+---
+
+## 5. Admin Edit Customer (using APIs)
+
+### Test case 5: log in as an admin and edit a customer information
+
+#### Test Steps:
+1. log in as an admin using the endpoint.
+2. use the admin log-in token to fetch customers.
+3. from the customer list pick a verified customer at random.
+4. using the endpoint edit/update the customer details of choice
+5. verify the updated details in the response
+
+#### Expected Results:
+- Customer details should be updated and the update should be seen in the response.
