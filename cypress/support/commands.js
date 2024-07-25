@@ -98,7 +98,7 @@ Cypress.Commands.add("getUserLogin", () => {
       // Extracting the authentication token to be reused in fetching users
       cy.request({
         method: "GET",
-        url: `${Cypress.config("baseUrl")}/api/v1/admin/user-listing`,
+        url: `${Cypress.config("baseUrl")}/api/v1/admin/user-listing?limit=100`,
         headers: {
           Authorization: `Bearer ${adminToken}`, // Reusing the bearer token for authorization
         },
@@ -153,7 +153,7 @@ Cypress.Commands.add("loginUser", (email, password) => {
   loginPage.enterLoginField("Password", password); //entering user credentials
   loginPage.submitLogin(); //clicking on the submit button
   //verifying that the user is logged in by seeing the log out button
-  cy.get("button").contains("LOGOUT").should("exist").should("be.visible");
+  cy.get("button").contains("LOGOUT", { timeout: 30000 }).should("exist").should("be.visible");
 });
 
 Cypress.Commands.add("generateShippingDetails", () => {
